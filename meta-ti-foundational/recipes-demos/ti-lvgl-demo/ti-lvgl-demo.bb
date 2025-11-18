@@ -1,65 +1,90 @@
 DESCRIPTION = "High Resolution OOB Demo"
-
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${WORKDIR}/git/LICENSE;md5=802d3d83ae80ef5f343050bf96cce3a4"
 
 BRANCH = "legacy"
 BRANCH:am62lxx-evm = "master"
 
-SRC_URI = "gitsm://github.com/texasinstruments/ti-lvgl-demo.git;branch=${BRANCH};protocol=https \
+SRC_URI = "gitsm://github.com/texasinstruments/ti-lvgl-demo.git;branch=${BRANCH};protocol=https;name=main \
            file://ti-lvgl-demo.service \
           "
+
+# External demos needed for legacy branch (non-am62lxx machines)
+SRC_URI:append = " git://github.com/TexasInstruments/lv_demos.git;protocol=https;branch=legacy;name=lvdemos;destsuffix=git-lvdemos"
+
 S = "${WORKDIR}/git/lv_port_linux"
 B = "${S}/build-arm64"
 
-SRCREV = "4b0113fb55ef4f8be5c3e8e8ae5bd7481fffdef2"
-SRCREV:am62lxx-evm = "231f5d956c83f934c6b4175870d867a61ae5bc32"
+SRCREV_main = "edc14fdab29376d9642ee057c9a2095fdc58416a"
+SRCREV_main:am62lxx-evm = "231f5d956c83f934c6b4175870d867a61ae5bc32"
+SRCREV_lvdemos = "de9c755979b690a2064b80d993bd14f0be7eff5b"
 
-inherit systemd
+SRCREV_FORMAT = "main_lvdemos"
+
+inherit systemd cmake
+
 SYSTEMD_PACKAGES = "${PN}"
 SYSTEMD_SERVICE:${PN} = "${PN}.service"
 
-DEPENDS += "cmake mosquitto alsa-lib alsa-utils alsa-tools libdrm libsdl2 libsdl2-image curl wayland-protocols curl ca-certificates python3-pcpp-native "
-RDEPENDS:${PN} += "cmake mosquitto alsa-lib alsa-utils alsa-tools libdrm libsdl2 libsdl2-image mosquitto-clients curl wayland-protocols curl ca-certificates tensorflow-lite nnstreamer analytics-demo-data"
+DEPENDS += "mosquitto alsa-lib alsa-utils alsa-tools libdrm libsdl2 libsdl2-image \
+            curl wayland-protocols ca-certificates \
+            python3-pcpp-native python3-native wayland wayland-native \
+           "
 
-inherit cmake
+RDEPENDS:${PN} += "mosquitto alsa-lib alsa-utils alsa-tools libdrm libsdl2 libsdl2-image \
+                   mosquitto-clients curl wayland-protocols ca-certificates \
+                   tensorflow-lite nnstreamer analytics-demo-data \
+                  "
+
 OECMAKE_SOURCEPATH = "${S}"
+
+export Python3_EXECUTABLE = "${STAGING_BINDIR_NATIVE}/python3-native/python3"
+export SDKTARGETSYSROOT = "${STAGING_DIR_TARGET}"
+
 EXTRA_OECMAKE += " \
-      -DCMAKE_CXX_FLAGS=-O3 \
-      -DCMAKE_C_FLAGS=-O3 \
-      -DCMAKE_C_FLAGS=-I${STAGING_INCDIR}/libdrm \
-      -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_FLAGS=-O3 \
+    -DCMAKE_C_FLAGS='-O3 -I${STAGING_INCDIR}/libdrm' \
+    -DPython3_EXECUTABLE=${STAGING_BINDIR_NATIVE}/python3-native/python3 \
+    -DFETCHCONTENT_FULLY_DISCONNECTED=ON \
+    -DFETCHCONTENT_SOURCE_DIR_LV_DEMOS_EXT=${WORKDIR}/git-lvdemos \
 "
 
 do_configure() {
-    cmake -B ${S}/build-arm64 -S ${S} \
-        ${EXTRA_OECMAKE}
+    export PYTHONPATH="${STAGING_LIBDIR_NATIVE}/${PYTHON_DIR}/site-packages:${PYTHONPATH}"
+    export PATH="${STAGING_BINDIR_NATIVE}/python3-native:${PATH}"
+    export Python3_EXECUTABLE="${STAGING_BINDIR_NATIVE}/python3-native/python3"
+    export SDKTARGETSYSROOT="${STAGING_DIR_TARGET}"
+    
+    cmake -B ${B} -S ${S} ${EXTRA_OECMAKE}
 }
 
 do_compile() {
-    make -C ${S}/build-arm64
+    oe_runmake -C ${B}
 }
 
 do_install() {
     CP_ARGS="-Prf --preserve=mode,timestamps --no-preserve=ownership"
+    
     install -d ${D}${bindir}
     install -d ${D}${datadir}/ti-lvgl-demo/assets
     install -d ${D}${datadir}/ti-lvgl-demo/slides
     install -d ${D}${datadir}/ti-lvgl-demo/cert
-
+    
     if [ "${MACHINE}" = "am62lxx-evm" ]; then
         install -m 0755 ${S}/bin/lvglsim ${D}${bindir}
         cp ${CP_ARGS} ${S}/lvgl/demos/high_res/assets/* ${D}${datadir}/ti-lvgl-demo/assets
         cp ${CP_ARGS} ${S}/lvgl/demos/high_res/slides/* ${D}${datadir}/ti-lvgl-demo/slides
     else
-        cp ${CP_ARGS} ${B}/_deps/lv_demos_ext-src/src/high_res/assets/* ${D}${datadir}/ti-lvgl-demo/assets
-        cp ${CP_ARGS} ${B}/_deps/lv_demos_ext-src/src/high_res/slides/* ${D}${datadir}/ti-lvgl-demo/slides
-        
+        install -m 0755 ${B}/bin/lvglsim ${D}${bindir}
+        cp ${CP_ARGS} ${WORKDIR}/git-lvdemos/src/high_res/assets/* ${D}${datadir}/ti-lvgl-demo/assets
+        cp ${CP_ARGS} ${WORKDIR}/git-lvdemos/src/high_res/slides/* ${D}${datadir}/ti-lvgl-demo/slides
     fi
-
+    
     install -m 0755 ${S}/certs/AmazonRootCA1.pem ${D}${datadir}/ti-lvgl-demo/cert/
+    
     install -d ${D}${systemd_system_unitdir}
-    install -m 0755 ${WORKDIR}/ti-lvgl-demo.service ${D}${systemd_system_unitdir}/ti-lvgl-demo.service
+    install -m 0644 ${WORKDIR}/ti-lvgl-demo.service ${D}${systemd_system_unitdir}/ti-lvgl-demo.service
 }
 
 FILES:${PN} += " \
@@ -69,3 +94,6 @@ FILES:${PN} += " \
     ${systemd_system_unitdir}/ti-lvgl-demo.service \
     ${datadir}/ti-lvgl-demo/cert/AmazonRootCA1.pem \
 "
+
+do_configure[network] = "0"
+do_compile[network] = "0"
