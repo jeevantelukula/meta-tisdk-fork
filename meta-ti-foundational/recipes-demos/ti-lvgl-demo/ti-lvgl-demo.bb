@@ -19,7 +19,7 @@ inherit systemd
 SYSTEMD_PACKAGES = "${PN}"
 SYSTEMD_SERVICE:${PN} = "${PN}.service"
 
-DEPENDS += "cmake mosquitto alsa-lib alsa-utils alsa-tools libdrm libsdl2 libsdl2-image curl wayland-protocols curl ca-certificates"
+DEPENDS += "cmake mosquitto alsa-lib alsa-utils alsa-tools libdrm libsdl2 libsdl2-image curl wayland-protocols curl ca-certificates python3-pcpp-native "
 RDEPENDS:${PN} += "cmake mosquitto alsa-lib alsa-utils alsa-tools libdrm libsdl2 libsdl2-image mosquitto-clients curl wayland-protocols curl ca-certificates tensorflow-lite nnstreamer analytics-demo-data"
 
 inherit cmake
