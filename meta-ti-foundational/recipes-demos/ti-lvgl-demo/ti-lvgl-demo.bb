@@ -3,13 +3,17 @@ DESCRIPTION = "High Resolution OOB Demo"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${WORKDIR}/git/LICENSE;md5=802d3d83ae80ef5f343050bf96cce3a4"
 
-SRC_URI = "gitsm://github.com/texasinstruments/ti-lvgl-demo.git;branch=master;protocol=https \
+BRANCH = "legacy"
+BRANCH:am62lxx-evm = "master"
+
+SRC_URI = "gitsm://github.com/texasinstruments/ti-lvgl-demo.git;branch=${BRANCH};protocol=https \
            file://ti-lvgl-demo.service \
           "
 S = "${WORKDIR}/git/lv_port_linux"
 B = "${S}/build-arm64"
 
-SRCREV = "231f5d956c83f934c6b4175870d867a61ae5bc32"
+SRCREV = "4b0113fb55ef4f8be5c3e8e8ae5bd7481fffdef2"
+SRCREV:am62lxx-evm = "231f5d956c83f934c6b4175870d867a61ae5bc32"
 
 inherit systemd
 SYSTEMD_PACKAGES = "${PN}"
@@ -42,11 +46,18 @@ do_install() {
     install -d ${D}${datadir}/ti-lvgl-demo/assets
     install -d ${D}${datadir}/ti-lvgl-demo/slides
     install -d ${D}${datadir}/ti-lvgl-demo/cert
-    install -m 0755 ${S}/bin/lvglsim ${D}${bindir}
-    cp ${CP_ARGS} ${S}/lvgl/demos/high_res/assets/* ${D}${datadir}/ti-lvgl-demo/assets
-    cp ${CP_ARGS} ${S}/lvgl/demos/high_res/slides/* ${D}${datadir}/ti-lvgl-demo/slides
-    install -m 0755 ${S}/certs/AmazonRootCA1.pem ${D}${datadir}/ti-lvgl-demo/cert/
 
+    if [ "${MACHINE}" = "am62lxx-evm" ]; then
+        install -m 0755 ${S}/bin/lvglsim ${D}${bindir}
+        cp ${CP_ARGS} ${S}/lvgl/demos/high_res/assets/* ${D}${datadir}/ti-lvgl-demo/assets
+        cp ${CP_ARGS} ${S}/lvgl/demos/high_res/slides/* ${D}${datadir}/ti-lvgl-demo/slides
+    else
+        cp ${CP_ARGS} ${B}/_deps/lv_demos_ext-src/src/high_res/assets/* ${D}${datadir}/ti-lvgl-demo/assets
+        cp ${CP_ARGS} ${B}/_deps/lv_demos_ext-src/src/high_res/slides/* ${D}${datadir}/ti-lvgl-demo/slides
+        
+    fi
+
+    install -m 0755 ${S}/certs/AmazonRootCA1.pem ${D}${datadir}/ti-lvgl-demo/cert/
     install -d ${D}${systemd_system_unitdir}
     install -m 0755 ${WORKDIR}/ti-lvgl-demo.service ${D}${systemd_system_unitdir}/ti-lvgl-demo.service
 }
