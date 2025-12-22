@@ -11,7 +11,7 @@ SRC_URI = "gitsm://github.com/texasinstruments/ti-lvgl-demo.git;branch=${BRANCH}
            file://ti-lvgl-demo.service \
           "
 
-S = "${WORKDIR}/git/lv_port_linux"
+S = "${UNPACKDIR}/${BB_GIT_DEFAULT_DESTSUFFIX}/lv_port_linux"
 
 SRCREV_main = "edc14fdab29376d9642ee057c9a2095fdc58416a"
 SRCREV_main:am62lxx-evm = "72bc10aff283c81f89fc4496d61cc811c18db414"

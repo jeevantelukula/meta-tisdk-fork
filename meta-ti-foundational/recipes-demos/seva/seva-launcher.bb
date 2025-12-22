@@ -8,7 +8,7 @@ COMPATIBLE_MACHINE = "am62xx|am62pxx|j721s2|j784s4|j722s"
 
 PV = "v1.0.7"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 SRC_URI = " \
     https://github.com/TexasInstruments/seva/releases/download/${PV}/seva-launcher-am62-aarch64;name=am62_launcher \

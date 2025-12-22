@@ -14,7 +14,7 @@ PLAT_SOC = ""
 PLAT_SOC:am62xx = "am62x"
 PLAT_SOC:am62pxx = "am62p"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${BB_GIT_DEFAULT_DESTSUFFIX}"
 
 DEPENDS = "gstreamer1.0-plugins-base ti-gst-utils"
 RDEPENDS:${PN}-source = "bash meson ninja"

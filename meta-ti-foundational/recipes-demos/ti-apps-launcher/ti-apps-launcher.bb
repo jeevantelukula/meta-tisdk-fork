@@ -69,7 +69,7 @@ SRC_URI = " \
     file://Usage.md \
 "
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${BB_GIT_DEFAULT_DESTSUFFIX}"
 
 APPS_DEFINES = ""
 APPS_DEFINES:am62xx = "SOC_AM62"
