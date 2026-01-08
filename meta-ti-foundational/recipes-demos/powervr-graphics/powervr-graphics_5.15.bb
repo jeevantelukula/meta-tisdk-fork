@@ -11,21 +11,26 @@ SRC_URI = " \
 "
 
 BRANCH = "master"
-SRCREV = "f79fdc075ca1f81f2aac98160466d510cd8f1da2"
+SRCREV = "470ad34a080d285f84195b0556a8a4a67c8b0c7b"
 
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE.md;md5=402476d9302b00251cc699d23264b191"
 
-S = "${UNPACKDIR}/${BB_GIT_DEFAULT_DESTSUFFIX}"
 SRC_DIR = "arm"
 SRC_DIR:k3 = "armv8_64"
 
-inherit cmake pkgconfig
+inherit cmake pkgconfig gcc15-compat
+
+# GCC 15 requires explicit inclusion of <cstdint> for uint32_t, uint64_t, etc.
+GCC15_CSTDINT_FILES = "\
+    ${S}/framework/PVRCore/strings/StringFunctions.h \
+    ${S}/framework/PVRCore/stream/Stream.h \
+"
 
 export http_proxy
 export https_proxy
 
-EXTRA_OECMAKE += " -DPVR_WINDOW_SYSTEM=Wayland -DCMAKE_LIBRARY_PATH= -DPVR_BUILD_OPENGLES_EXAMPLES=On -DPVR_BUILD_VULKAN_EXAMPLES=Off"
+EXTRA_OECMAKE += " -DPVR_WINDOW_SYSTEM=Wayland -DCMAKE_LIBRARY_PATH= -DPVR_BUILD_OPENGLES_EXAMPLES=On -DPVR_BUILD_VULKAN_EXAMPLES=Off -DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 
 do_install () {
     CP_ARGS="-Prf --preserve=mode,timestamps --no-preserve=ownership"

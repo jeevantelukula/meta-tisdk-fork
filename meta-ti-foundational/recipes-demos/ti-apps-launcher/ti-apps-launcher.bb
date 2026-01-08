@@ -20,6 +20,7 @@ DEPENDS = "\
     qtdeclarative \
     qtmultimedia \
     gstreamer1.0 \
+    gstreamer1.0-plugins-good \
     qtdeclarative-native \
     qtshadertools \
     qt5compat \
@@ -56,6 +57,7 @@ RDEPENDS:${PN}:remove:j722s = "tensorflow-lite onnx onnxruntime nnstreamer analy
 RDEPENDS:${PN}:remove:am62xxsip-evm = "seva-launcher"
 RDEPENDS:${PN}:append:am62xx = " powervr-graphics"
 RDEPENDS:${PN}:append:am62pxx = " powervr-graphics"
+RDEPENDS:${PN}:remove:am62pxx = "tensorflow-lite onnx onnxruntime nnstreamer"
 
 BRANCH = "master"
 SRCREV = "955bc28d39a5718949f4eb9146ef40d7b06a022f"
@@ -97,6 +99,10 @@ inherit systemd pkgconfig cmake
 SYSTEMD_PACKAGES = "${PN}"
 
 SYSTEMD_SERVICE:${PN} = "${APP_NAME}.service"
+
+# gstreamer1.0-plugins-good provides gstreamer1.0-plugins-good-qml6 at runtime
+# QA check doesn't detect this relationship properly
+INSANE_SKIP:${PN} += "build-deps"
 
 OECMAKE_CXX_FLAGS += "-D${APPS_DEFINES}=1"
 OECMAKE_CXX_FLAGS += "-DRT_BUILD=${RT_BUILD_VALUE}"
