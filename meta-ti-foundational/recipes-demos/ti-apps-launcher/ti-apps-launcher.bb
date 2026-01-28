@@ -48,6 +48,7 @@ RDEPENDS:${PN} = "\
     onnxruntime \
     nnstreamer \
     analytics-demo-data \
+    qmltermwidget \
 "
 
 RDEPENDS:${PN}:remove:j721s2 = "tensorflow-lite onnx onnxruntime nnstreamer analytics-demo-data"
@@ -67,6 +68,7 @@ SRC_URI = " \
     file://ti-demo.service \
     file://dev-dri-card1.rules \
     file://Usage.md \
+    file://0001-add-terminal.patch \
 "
 
 S = "${WORKDIR}/git"

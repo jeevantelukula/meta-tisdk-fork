@@ -1,0 +1,27 @@
+From 9d74548dbcee597c5ed9ac8d41cda33c1e25acf4 Mon Sep 17 00:00:00 2001
+From: Telukula Jeevan Kumar Sahu <j-sahu@ti.com>
+Date: Tue, 27 Jan 2026 18:27:33 +0530
+Subject: [PATCH] add terminal
+
+Upstream-Status: Inappropriate [embedded specific]
+
+Signed-off-by: Telukula Jeevan Kumar Sahu <j-sahu@ti.com>
+---
+ configs/am62pxx-evm.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/configs/am62pxx-evm.h b/configs/am62pxx-evm.h
+index cfb0dff..fc04556 100644
+--- a/configs/am62pxx-evm.h
++++ b/configs/am62pxx-evm.h
+@@ -16,6 +16,7 @@ struct device_info device_info_am62p = {
+         app_chromium_browser,
+         app_3d_demo,
+         app_settings,
++        app_terminal,
+         app_wifi,
+     },
+     .include_powerbuttons = {
+-- 
+2.34.1
+
