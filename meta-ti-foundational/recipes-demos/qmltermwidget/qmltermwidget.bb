@@ -5,13 +5,13 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=4641e94ec96f98fabc56ff9cc48be14b"
 
 PV = "0.14.1+git"
-SRCREV = "b3a852c7011143248d2d10bc1cfaf1ce71691271"
+SRCREV = "ce8e09ad4daeb9fe59b60d6b228b0f7cf4055e16"
 
 DEPENDS = "qtbase qtdeclarative qt5compat"
 RDEPENDS:${PN} = "ttf-liberation-mono"
 
 SRC_URI = " \
-    git://github.com/Tofee/qmltermwidget.git;protocol=https;branch=tofe/qt6 \
+    git://github.com/Swordfish90/qmltermwidget.git;protocol=https;branch=master \
     file://0001-qmltermwidget.pro-don-t-install-asset-directories-tw.patch \
 "
 S = "${WORKDIR}/git"
