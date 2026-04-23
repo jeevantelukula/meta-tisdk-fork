@@ -11,3 +11,9 @@ CARGO_FEATURES:am62pxx-evm = "slint/backend-winit-wayland slint/renderer-skia"
 # the software renderer is purpose-built for CPU-only operation and delivers
 # the best performance on this platform.
 CARGO_FEATURES:am62lxx-evm = "slint/backend-linuxkms slint/renderer-software"
+
+# AM62L has no GPU so hardware OpenGL is unavailable. opengl_texture and
+# opengl_underlay use raw OpenGL (glow crate) directly alongside Slint and
+# require a working OpenGL context at runtime. Exclude them from the AM62L
+# build to avoid shipping non-functional binaries.
+SLINT_DEMOS:am62lxx-evm = "slide_puzzle printerdemo gallery energy-monitor home-automation"
