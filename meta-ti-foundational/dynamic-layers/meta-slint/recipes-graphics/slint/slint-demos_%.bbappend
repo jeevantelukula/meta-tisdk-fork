@@ -10,7 +10,7 @@ CARGO_FEATURES:am62pxx-evm = "slint/backend-winit-wayland slint/renderer-skia"
 # FemtoVG and Skia both require OpenGL ES which has no hardware path on AM62L;
 # the software renderer is purpose-built for CPU-only operation and delivers
 # the best performance on this platform.
-CARGO_FEATURES:am62lxx-evm = "slint/backend-linuxkms slint/renderer-software"
+CARGO_FEATURES:am62lxx-evm = "slint/backend-linuxkms slint/renderer-skia"
 
 # AM62L has no GPU so hardware OpenGL is unavailable. opengl_texture and
 # opengl_underlay use raw OpenGL (glow crate) directly alongside Slint and
